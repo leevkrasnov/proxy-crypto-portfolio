@@ -16,12 +16,27 @@ app.get('/api/proxy', async (req, res) => {
 
   try {
     const response = await axios.get(url, {
-      responseType: url.includes('.xml') ? 'text' : 'json',
+      responseType: 'text', // Получаем ответ как текст
     });
 
-    res.send(response.data);
+    const contentType = response.headers['content-type'];
+
+    // Если ответ JSON, отправляем как JSON
+    if (contentType.includes('application/json')) {
+      res.json(JSON.parse(response.data));
+    }
+    // Если ответ XML или другой формат, отправляем как текст
+    else if (
+      contentType.includes('application/xml') ||
+      contentType.includes('text/xml')
+    ) {
+      res.set('Content-Type', 'application/xml');
+      res.send(response.data);
+    } else {
+      res.status(500).json({ error: 'Неизвестный формат данных от API' });
+    }
   } catch (error) {
-    console.error('Ошибка при запросе:', error.message);
+    console.error('Ошибка при запросе к API:', error.message);
     res.status(500).json({ error: 'Ошибка при запросе к API' });
   }
 });
