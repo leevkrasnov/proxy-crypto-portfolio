@@ -27,5 +27,5 @@ app.get('/api/proxy', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Сервер запущен на http://localhost:${PORT}`);
+  console.log(`Сервер запущен на порту ${PORT}`);
 });
